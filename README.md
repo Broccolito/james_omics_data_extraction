@@ -1,64 +1,218 @@
-# Simonson Lab Database
-This application will help users query the data collected from all the studies Simonson Lab has done.
+# James Omics Data Extraction
 
-Maintainers: Wanjun Gu (Database), Jane Li (Documentation)
+A comprehensive R-based data extraction and processing pipeline for multi-study omics and phenotypic data from high-altitude population studies. This project extracts and consolidates specific variables across multiple study cohorts (phs00001-phs00012) into standardized, analysis-ready datasets.
 
-## Install R and RStudio
-RStudio will be used to run the web app.
-Follow this [link](https://www.dataquest.io/blog/installing-r-on-your-computer/) to install R and Rstudio
+## 📊 Project Overview
 
-## Install the database and the web app
-1. Select **<>Code button**, then **Local** tab, then **HTTPS** tab, then **copy the URL** by clicking on the button that look like double pages or by using normal copying. 
+This repository contains tools for extracting phenotypic and clinical variables from a longitudinal study of high-altitude populations. The data spans multiple collection periods from 2015 to 2022, including physiological measurements, blood biomarkers, pulmonary function tests, and sleep studies conducted at high altitude.
 
-![copy url](./README_images/copyURL.png)
+### Study Cohorts
 
-2. If you don't have Git Bash, follow this [link](https://www.educative.io/answers/how-to-install-git-bash-in-windows) for installation.
-3. **Open Git Bash** and change the working directory to the preferred directory (folder)
-    - option one: Go to File Explorer or the Finder and choose the directory (folder) you want to keep this repository in. Right click on the directory and choose to open with Git Bash.
-    - option two: open Git Bash and use the command below to get to the right directory, replacing directoryPath with something like C:\Users\userName\Desktop
-        ```
-        cd directoryPath
-        ```
-4. **type in the command below with the URL copied** into the place of URL and press enter to create your clone.
-    ```
-    git clone URL
-    ```
-    You should see everything from Github in directory you specified. 
+The project processes data from 12 distinct study phases:
+- **phs00001**: Trip Aug 2015
+- **phs00002**: Trip Dec 2015  
+- **phs00003**: Trip Dec 2016
+- **phs00004**: Sequenced DNA
+- **phs00005**: Trip Dec 2017
+- **phs00006**: Trip Mar May 2019
+- **phs00007**: Villafuerte in-house
+- **phs00008**: Pulmonary Function
+- **phs00009**: Sleep Studies
+- **phs00010**: Hypoxic Ventilatory Response (HVR)
+- **phs00011**: SNP Genotypes 2022
+- **phs00012**: EPAS1 Genotype 2021
 
-## Run the web app
-1. Make sure you have R and RStudio installed.
-2. Open **install_packages.R** with RStudio. You would only need to do this once. Click the run button on the upper right corner to install the required packages 
-    - this script will not reinstall packages that was already installed
-3. Open **app.R** and click the run app button on the upper right corner to start the app. You should see the Introduction page when the app starts, like this: 
+## 🔧 Features
 
-![screen on start](./README_images/screenOfAppOnStart.png)
+- **Automated Variable Extraction**: Extracts specific phenotypic variables across multiple study datasets
+- **Data Harmonization**: Consolidates measurements from different time points and studies
+- **Standardized Output**: Generates consistently formatted CSV files for downstream analysis
+- **Flexible Configuration**: Easily modify which variables to extract via the `phv_list.txt` file
+- **Quality Control**: Maintains data integrity across multi-study joins
 
-You can open it in browser if preferred with the Open in Browser button in the toolbar at the top or by copying the url given on the RStudio console into the browser. Like below
+## 📁 Repository Structure
 
-![listening on port](./README_images/listeningPort.png)
+```
+james_omics_data_extraction/
+├── data/                          # Raw study datasets
+│   ├── phs00001.csv              # Individual study files
+│   ├── phs00002.csv              # ...
+│   ├── ...                       # (phs00001 through phs00012)
+│   ├── variables.csv             # Variable metadata and descriptions
+│   └── studies.csv               # Study metadata
+├── extracted_data/               # Generated output files
+│   ├── phv00004_Gender_extracted.csv
+│   ├── phv00007_Age_extracted.csv
+│   ├── phv00023_Smokes_extracted.csv
+│   └── ...                      # Additional extracted variables
+├── raw_data/                    # Original source files and processing scripts
+├── load_data.R                  # Main extraction script
+├── phv_list.txt                 # List of variables to extract
+├── .gitignore                   # Git ignore file
+└── README.md                    # This documentation
+```
 
-4. There are two options. You can **query by subject** or **query by variable**. For both the query by subject and by variable page, it is separated into three blocks: **the query section, the table of all data, and the search result**. Query by variable have one extra function at the very bottom to download the result of the query.
+## 🚀 Quick Start
 
-![dashboard section](./README_images/dashboard.png)
+### Prerequisites
 
-The tables can be sorted by on column using the up and down arrow next to the column headers. 
+- R (>= 4.0.0)
+- Required R packages:
+  ```r
+  install.packages(c("dplyr", "data.table"))
+  ```
 
-![how to sort a table](./README_images/sortTable.png)
+### Usage
 
-As you can notice, there are another search function in the table of all data and the result table. This search function is **case insensitive** and can match partial words or numbers. This can help you find the required data type/format of the query searches. The query is **case sensitive** and requires the user to input a certain type of data described below. 
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Broccolito/james_omics_data_extraction.git
+   cd james_omics_data_extraction
+   ```
 
-- **Query by subject**: search the subject up with their iid to find the studies they have been in and the variables that was taken during the study. The variable is displayed as the variable accession number. The result cannot be downloaded. 
-    \* Tip: the initials, first name, last name, or sex can be searched up in the table of all subject to get the iid of the subject. 
-- **Query by variable**: the result will return iid of subjects who have the data of the variable searched up and the data itself. The query will follow this syntax: 
-    ```
-    result_header_name   function   data_type   variable_accession
-    ```
-- It is required to write if the data type of the variables is **numeric** or **non-numeric**. In this case, all other variables are numeric, except for phv00004 which is sex. If the number is written with letters, it is still numeric. 
-- The excepted functions are **average, earliest, and latest**
+2. **Configure variables to extract**:
+   Edit `phv_list.txt` to specify which variables you want to extract:
+   ```
+   phv00007  # Age
+   phv00004  # Gender
+   phv00051  # BMI
+   # Add more variables as needed
+   ```
 
-For example for this query, 
+3. **Run the extraction**:
+   ```r
+   source("load_data.R")
+   ```
 
-![example query](./README_images/exQuery.png)
+4. **Access extracted data**:
+   Processed files will be available in the `extracted_data/` directory with the naming convention:
+   ```
+   phv{accession}_{variable_name}_extracted.csv
+   ```
 
-- There will be four columns, excluding the iid of the subject, named "sdp", "hct", "sex", and "epas1". 
-- For sdp column, it is taking the average of the three variables phv00032, phv00030, and phv00078 of the subjects. For hct column, it is just taking the average of one variable phv00067 of the subjects. For the sex column, it is taking the earliest recorded phv00004 of the subjects. For epas1 column, it is taking the latest recorded phg00014 of the subjects
+## 📋 Available Variables
+
+The project currently extracts 21 key variables across multiple domains:
+
+### Demographic & Anthropometric
+- **phv00004**: Gender/Sex
+- **phv00007**: Age at time of study
+- **phv00051**: BMI (Body Mass Index)
+
+### Cardiovascular
+- **phv00027**: Heart Rate (HR)
+- **phv00028**: Oxygen Saturation (SpO2)
+- **phv00032**: Systolic Blood Pressure Average
+- **phv00035**: Diastolic Blood Pressure Average
+
+### Metabolic Biomarkers
+- **phv00036**: Glucose level
+- **phv00037**: Insulin level
+- **phv00038**: Cholesterol level
+- **phv00039**: HDL concentration
+- **phv00040**: LDL concentration
+- **phv00041**: Triglycerides level
+
+### Hematological
+- **phv00067**: Venous Hematocrit percentage
+
+### Iron Studies
+- **phv00042**: Ferritin level
+- **phv00043**: Iron level
+- **phv00044**: Transferrin level
+
+### Lifestyle
+- **phv00023**: Smoking status
+
+### Respiratory Function
+- **phv00109**: Hypoxic Ventilatory Response (HVR)
+- **phv00110**: Hypercapnic HVR
+- **phv00111**: Hypercapnic Ventilatory Response (HCVR)
+
+*For complete variable descriptions, see `data/variables.csv`*
+
+## 📊 Data Output Format
+
+Each extracted variable generates a CSV file with the following structure:
+
+```csv
+iid,Variable_phs00001,Variable_phs00002,Variable_phs00003,...
+CDP000025,Value1,Value2,Value3,...
+CDP000059,Value1,Value2,Value3,...
+...
+```
+
+Where:
+- `iid`: Unique subject identifier
+- `Variable_phs0000X`: Variable values from each study phase
+- Missing values are represented as empty cells
+
+## 🔍 Data Processing Details
+
+### Extraction Process
+1. **Variable Selection**: Reads target variables from `phv_list.txt`
+2. **Multi-Study Join**: Performs full outer joins across all study datasets (phs00001-phs00012)
+3. **Variable Mapping**: Uses `variables.csv` to map variable accessions to descriptive names
+4. **Data Cleaning**: Removes rows with missing subject IDs
+5. **Standardized Output**: Saves processed data with consistent naming conventions
+
+### Key Functions
+- `extract_data(variable_accession_number)`: Core extraction function that processes a single variable across all studies
+- Handles missing data gracefully using full outer joins
+- Maintains subject-level linkage across all time points and studies
+
+## 🧬 Research Context
+
+This dataset supports research in:
+- **High-altitude physiology**: Understanding adaptation to chronic hypoxia
+- **Genetic epidemiology**: Investigating genetic variants associated with altitude adaptation
+- **Longitudinal health studies**: Tracking physiological changes over time
+- **Chronic Mountain Sickness (CMS)**: Studying maladaptation to high altitude
+- **Respiratory function**: Analyzing ventilatory responses and pulmonary function
+
+## 📝 Data Governance
+
+### Privacy & Ethics
+- Subject identifiers are de-identified codes (CDP000XXX)
+- Identifiable information (names, addresses, phone numbers) are flagged in metadata
+- Data usage should comply with relevant IRB/ethics approvals
+
+### Quality Assurance
+- Variable definitions are standardized across studies
+- Missing data patterns preserved for analytical transparency
+- Temporal relationships maintained through study phase indicators
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-variable`)
+3. Add your variable to `phv_list.txt`
+4. Test the extraction process
+5. Commit your changes (`git commit -am 'Add new variable extraction'`)
+6. Push to the branch (`git push origin feature/new-variable`)
+7. Create a Pull Request
+
+## 📚 Citation
+
+If you use this dataset or code in your research, please cite:
+
+```
+[Citation information to be added based on associated publications]
+```
+
+## 📞 Support
+
+For questions about:
+- **Data extraction**: Create an issue in this repository
+- **Variable definitions**: Refer to `data/variables.csv` or contact the data stewards
+- **Research collaboration**: Contact the principal investigators
+
+## 📄 License
+
+[License information to be specified]
+
+---
+
+**Last Updated**: July 2025  
+**Maintainer**: [Maintainer information]  
+**Version**: 1.0.0
